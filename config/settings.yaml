@@ -1,0 +1,30 @@
+# Application-level defaults. Environment variables / CLI flags override these.
+
+crew:
+  name: content_generation_crew
+  process: sequential
+  verbose: true
+  memory: false
+  # Max RPM helps avoid provider rate limits in production runs
+  max_rpm: 10
+
+llm:
+  # Overridden by OPENAI_MODEL_NAME when set
+  model: gpt-4o-mini
+  temperature: 0.4
+
+search:
+  # Number of organic results requested from Serper when available
+  result_limit: 10
+
+output:
+  directory: outputs
+  # Filenames are timestamped at runtime; these are basename prefixes
+  research_prefix: research_report
+  blog_prefix: blog_post
+  social_prefix: social_posts
+  run_manifest: run_manifest.json
+
+logging:
+  level: INFO
+  format: "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"

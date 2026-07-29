@@ -1,0 +1,40 @@
+# Task definitions for the sequential Content Generation Crew.
+# `context` keys reference other task names whose outputs are injected.
+
+research_task:
+  description: >
+    Analyze the major developments related to {topic}. Identify key trends,
+    technologies, notable companies or labs, and potential industry impact.
+    Use web search to gather up-to-date evidence. Produce a detailed research
+    report with clear sections and cited sources (title + URL when available).
+  expected_output: >
+    A structured research report with sections for: Executive Summary,
+    Key Breakthroughs, Industry Adoption, Emerging Tools, Risks & Challenges,
+    and Sources. Each major claim should reference a source.
+  agent: research_agent
+
+writer_task:
+  description: >
+    Create an engaging blog post based on the research findings about {topic}.
+    Tailor the content for a tech-savvy audience. Aim for roughly 4–6
+    well-structured paragraphs (or equivalent sections with a clear intro,
+    body, and conclusion). Preserve factual accuracy from the research brief;
+    do not invent statistics or company examples that were not in the brief.
+  expected_output: >
+    A polished blog post in Markdown with a title, short introduction,
+    body sections, and a closing takeaway. Suitable for publishing as-is.
+  agent: writer_agent
+  context:
+    - research_task
+
+social_task:
+  description: >
+    Summarize the blog post about {topic} into 2–3 engaging social media posts
+    suitable for LinkedIn or X (Twitter). Tone: informative, professional,
+    and encouraging further reading. Include relevant hashtags (2–4 per post).
+  expected_output: >
+    Exactly 2 or 3 social media posts, clearly labeled (Post 1, Post 2, …),
+    each self-contained and ready to copy-paste onto a platform.
+  agent: social_agent
+  context:
+    - writer_task
