@@ -134,40 +134,6 @@ sequenceDiagram
   CLI-->>Op: Rich panels and artifact path
 ```
 
-### Component map (repository)
-
-```mermaid
-flowchart TB
-  subgraph config_pkg["config/"]
-    AY["agents.yaml"]
-    TY["tasks.yaml"]
-    SY["settings.yaml"]
-  end
-
-  subgraph src_pkg["src/content_crew/"]
-    CLI2["cli.py"]
-    CREW["crew.py"]
-    AG["agents/"]
-    TK["tasks/"]
-    TL["tools/search.py"]
-    SV["services/output_writer.py"]
-    MD["models/outputs.py"]
-    CF["config.py"]
-  end
-
-  CLI2 --> CREW
-  CREW --> AG
-  CREW --> TK
-  AG --> TL
-  AG --> AY
-  TK --> TY
-  CREW --> SY
-  CREW --> SV
-  CREW --> MD
-  CF --> AY
-  CF --> TY
-  CF --> SY
-```
 
 ### Data / artifact flow
 
