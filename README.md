@@ -70,6 +70,70 @@ flowchart LR
   T3 --> FINAL["Final output<br/>social posts"]
 ```
 
+### Sequence diagram — end-to-end collaboration
+
+How a single `content-crew run --topic "…"` call flows through the sequential CrewAI pipeline: research with Serper, writing with research context, social cutdown with blog context, then artifact persistence.
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Op as Operator
+  participant CLI as content-crew CLI
+  participant CFG as Config<br/>(agents.yaml / tasks.yaml / .env)
+  participant CC as ContentCrew
+  participant Crew as Crew<br/>(Process.sequential)
+  participant RA as research_agent<br/>Senior Research Analyst
+  participant Serper as SerperDevTool
+  participant LLM as LLM Provider<br/>(OpenAI via LiteLLM)
+  participant WA as writer_agent<br/>Tech Content Strategist
+  participant SA as social_agent<br/>Social Media Strategist
+  participant OW as OutputWriter
+  participant FS as outputs/&lt;run_id&gt;_&lt;topic&gt;/
+
+  Op->>CLI: run --topic "Latest Generative AI breakthroughs"
+  CLI->>CFG: Load settings, agents, tasks
+  CFG-->>CLI: Runtime Settings + YAML specs
+  CLI->>CC: kickoff(topic)
+
+  CC->>CC: Validate credentials<br/>(or dry-run fixtures)
+  CC->>Crew: Build agents=[RA, WA, SA]<br/>tasks=[research, writer, social]
+
+  Note over Crew,RA: Phase 1 — research_task
+  Crew->>RA: Execute research_task(topic)
+  loop Until research brief is sufficient
+    RA->>LLM: Reason about search plan
+    LLM-->>RA: Thought + tool call
+    RA->>Serper: search_query
+    Serper-->>RA: Organic results + snippets
+  end
+  RA->>LLM: Synthesize sourced research report
+  LLM-->>RA: Final research brief
+  RA-->>Crew: research_task.output<br/>(trends, breakthroughs, sources)
+
+  Note over Crew,WA: Phase 2 — writer_task<br/>(context = research_task.output)
+  Crew->>WA: Execute writer_task(topic, context=research)
+  WA->>LLM: Draft blog from research brief
+  LLM-->>WA: Markdown blog post
+  WA-->>Crew: writer_task.output<br/>(publishable blog)
+
+  Note over Crew,SA: Phase 3 — social_task<br/>(context = writer_task.output)
+  Crew->>SA: Execute social_task(topic, context=blog)
+  SA->>LLM: Compress blog into 2–3 posts
+  LLM-->>SA: LinkedIn / X social copy
+  SA-->>Crew: social_task.output<br/>(final crew result)
+
+  Crew-->>CC: CrewOutput (final = social posts)
+  CC->>OW: Persist CrewRunResult
+  OW->>FS: research_report.md
+  OW->>FS: blog_post.md
+  OW->>FS: social_posts.md
+  OW->>FS: final_output.md
+  OW->>FS: run_manifest.json
+  OW-->>CC: output_dir path
+  CC-->>CLI: CrewRunResult
+  CLI-->>Op: Rich panels + artifact path
+```
+
 ### Component map (repository)
 
 ```mermaid
