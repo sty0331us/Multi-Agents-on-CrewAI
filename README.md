@@ -70,36 +70,6 @@ flowchart LR
   T3 --> FINAL["Final output<br/>social posts"]
 ```
 
-### Agent · task · tool collaboration (detail)
-
-```mermaid
-sequenceDiagram
-  autonumber
-  participant Op as Operator
-  participant CLI as content-crew CLI
-  participant CC as ContentCrew
-  participant RA as research_agent
-  participant ST as SerperDevTool
-  participant WA as writer_agent
-  participant SA as social_agent
-  participant FS as OutputWriter
-
-  Op->>CLI: run --topic "…"
-  CLI->>CC: kickoff(topic)
-  CC->>RA: Execute research_task
-  loop Until brief is sufficient
-    RA->>ST: search_query
-    ST-->>RA: organic results + snippets
-  end
-  RA-->>CC: Research report + sources
-  CC->>WA: Execute writer_task (context=research)
-  WA-->>CC: Markdown blog post
-  CC->>SA: Execute social_task (context=blog)
-  SA-->>CC: 2–3 social posts
-  CC->>FS: Persist artifacts + manifest
-  FS-->>Op: outputs/&lt;run_id&gt;_&lt;topic&gt;/
-```
-
 ### Component map (repository)
 
 ```mermaid
